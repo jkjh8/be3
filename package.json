@@ -1,0 +1,39 @@
+{
+  "name": "be3",
+  "version": "0.0.1",
+  "description": "backend for bs",
+  "author": "jkjh82@naver.com",
+  "private": true,
+  "scripts": {
+    "start": "NODE_ENV=dev nodemon --exec babel-node ./app.js",
+    "build": "NODE_ENV=production nodemon --exec babel-node ./app.js"
+  },
+  "dependencies": {
+    "@babel/core": "^7.18.13",
+    "@babel/node": "^7.18.10",
+    "app-module-path": "^2.2.0",
+    "babel-plugin-transform-remove-console": "^6.9.4",
+    "cli-color": "^2.0.3",
+    "connect-mongo": "^4.6.0",
+    "cookie-parser": "^1.4.6",
+    "core-js": "3",
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "express-session": "^1.17.3",
+    "hangul-js": "^0.2.6",
+    "moment": "^2.29.4",
+    "mongoose": "^6.5.2",
+    "mongoose-paginate-v2": "^1.7.0",
+    "morgan": "^1.10.0",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
+    "socket.io": "^4.5.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.18.10",
+    "@babel/plugin-proposal-export-default-from": "^7.18.10",
+    "@babel/plugin-transform-runtime": "^7.18.10",
+    "@babel/preset-env": "^7.18.10",
+    "babel-plugin-module-resolver": "^4.1.0"
+  }
+}
