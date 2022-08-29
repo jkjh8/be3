@@ -16,8 +16,8 @@ if (workerData) {
     parentPort.postMessage({ type: 'error', err: err })
   })
 
-  core.on('message', (msg) => {
-    parentPort.postMessage({ type: 'message', msg: msg })
+  core.on('data', (data) => {
+    parentPort.postMessage({ type: 'data', data: data })
   })
 
   parentPort.on('message', (msg) => {

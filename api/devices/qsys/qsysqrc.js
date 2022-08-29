@@ -49,7 +49,7 @@ export class QRC extends EventEmitter {
         }
         // result
         try {
-          this.emit('message', JSON.parse(result))
+          this.emit('data', JSON.parse(result))
         } catch (err) {
           console.error(err)
         }

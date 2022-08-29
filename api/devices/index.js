@@ -1,8 +1,7 @@
 import Devices from '@/db/models/devices'
+import { Worker } from 'worker_threads'
 import { loggerArr as log } from '@/logger'
 import { objTokv } from '@/api/functions'
-import { Worker } from 'worker_threads'
-import { loggerArr } from '../../logger'
 
 const status = {}
 const workerPool = {}
@@ -36,17 +35,25 @@ function runQsysWorker(args) {
           `Q-Sys Error index: ${args.index} ipaddress: ${args.ipaddress} error: ${msg.err}`
         )
         break
-      case 'message':
-        switch (msg.message.id) {
-          case 'GetStatus':
-            status[args.index]['status'] = msg.message.result
-            break
-          case 'GetPa':
-            status[args.index]['pa'] = msg.message.result
-            break
-          default:
-            console.log('qsys result', msg.message)
-            break
+      case 'data':
+        if (Object.keys(msg.data).includes('error')) {
+          log(
+            5,
+            `qsys ${args.name} ${args.ipaddress}`,
+            `Code: ${msg.data.error.code}: ${msg.data.error.message}`
+          )
+        } else {
+          switch (msg.message.id) {
+            case 'GetStatus':
+              status[args.index]['status'] = msg.data.result
+              break
+            case 'GetPa':
+              status[args.index]['pa'] = msg.data.result
+              break
+            default:
+              console.log('qsys result', msg.data)
+              break
+          }
         }
         break
     }

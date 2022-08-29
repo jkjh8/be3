@@ -13,7 +13,9 @@ export default mongoose.model(
       mode: String,
       channels: Number,
       channel: Number,
-      status: Boolean
+      status: Boolean,
+      pageId: Number,
+      token: String
     },
     { timestamps: true }
   )
