@@ -1,3 +1,5 @@
+import fs from 'node:fs'
+
 export const objToStr = (obj) => {
   return Object.entries(obj)
     .map(([key, value]) => `${key}=${value ?? 'null'}`)
@@ -23,4 +25,10 @@ export const zoneToStr = (obj) => {
   return `이름=${obj.name}, 코어이름:${obj.core.name}, 코어주소:${
     obj.core.ipaddress
   }, Index:${obj.index}, 방송지역: ${children.join(',')}`
+}
+
+export const makeFolder = (dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir)
+  }
 }

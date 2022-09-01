@@ -7,56 +7,60 @@ const status = {}
 const workerPool = {}
 
 function runQsysWorker(args) {
-  if (workerPool[args.index]) return 'Already Connected'
-  const worker = new Worker('./qsys/worker.js', { workerData: args.ipaddress })
-  worker.on('message', (msg) => {
-    switch (msg.type) {
-      case 'connect':
-        workerPool[args.index] = worker
-        log(
-          3,
-          'Server',
-          `Q-Sys connected index: ${args.index} ipaddress: ${args.ipaddress}`
-        )
-        break
-      case 'close':
-        workerPool[args.index] = null
-        log(
-          4,
-          'Server',
-          `Q-Sys Closed index: ${args.index} ipaddress: ${args.ipaddress}`
-        )
-        break
-      case 'error':
-        workerPool[args.index] = null
-        log(
-          4,
-          'Server',
-          `Q-Sys Error index: ${args.index} ipaddress: ${args.ipaddress} error: ${msg.err}`
-        )
-        break
-      case 'data':
-        if (Object.keys(msg.data).includes('error')) {
+  return new Promise((resolve, reject) => {
+    if (workerPool[args.index]) return reject('Already Connected')
+    const worker = new Worker('./qsys/worker.js', {
+      workerData: args.ipaddress
+    })
+    worker.on('message', (msg) => {
+      switch (msg.type) {
+        case 'connect':
+          workerPool[args.index] = worker
           log(
-            5,
-            `qsys ${args.name} ${args.ipaddress}`,
-            `Code: ${msg.data.error.code}: ${msg.data.error.message}`
+            3,
+            'Server',
+            `Q-Sys connected index: ${args.index} ipaddress: ${args.ipaddress}`
           )
-        } else {
-          switch (msg.message.id) {
-            case 'GetStatus':
-              status[args.index]['status'] = msg.data.result
-              break
-            case 'GetPa':
-              status[args.index]['pa'] = msg.data.result
-              break
-            default:
-              console.log('qsys result', msg.data)
-              break
+          break
+        case 'close':
+          workerPool[args.index] = null
+          log(
+            4,
+            'Server',
+            `Q-Sys Closed index: ${args.index} ipaddress: ${args.ipaddress}`
+          )
+          break
+        case 'error':
+          workerPool[args.index] = null
+          log(
+            4,
+            'Server',
+            `Q-Sys Error index: ${args.index} ipaddress: ${args.ipaddress} error: ${msg.err}`
+          )
+          break
+        case 'data':
+          if (Object.keys(msg.data).includes('error')) {
+            log(
+              5,
+              `qsys ${args.name} ${args.ipaddress}`,
+              `Code: ${msg.data.error.code}: ${msg.data.error.message}`
+            )
+          } else {
+            switch (msg.message.id) {
+              case 'GetStatus':
+                status[args.index]['status'] = msg.data.result
+                break
+              case 'GetPa':
+                status[args.index]['pa'] = msg.data.result
+                break
+              default:
+                console.log('qsys result', msg.data)
+                break
+            }
           }
-        }
-        break
-    }
+          break
+      }
+    })
   })
 }
 
@@ -158,7 +162,15 @@ export async function checkIpaddress(req, res) {
 
 export async function deviceRefresh(req, res) {
   try {
-    const { ipaddress, deviceType, mode } = JSON.parse(req.params.value)
+    const args = JSON.parse(req.params.value)
+    const { deviceType, index, mode, ipaddress } = args
+    if (deviceType === 'Q-Sys') {
+      if (workerPool[index] !== null) {
+        workerPool[index].postMessage({ type: 'status' })
+      } else {
+        runQsysWorker(args)
+      }
+    }
   } catch (err) {
     log(5, req.user, `디바이스갱신오류: ${err}`)
     res.status(500).json(err)

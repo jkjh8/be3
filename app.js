@@ -6,6 +6,7 @@ const httpsPort = 3443
 // common nodesj modules
 import path from 'node:path'
 import dotenv from 'dotenv'
+import { makeFolder } from '@/api/functions'
 dotenv.config()
 
 // load db
@@ -62,7 +63,18 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(httpLogger('dev'))
 }
 
+// set folder and static
+global.filesPath = path.join(__dirname, 'files')
+global.tempPath = path.join(__dirname, 'files', 'tmp')
+makeFolder(filesPath)
+makeFolder(tempPath)
+makeFolder(path.join(filesPath, 'Media'))
+makeFolder(path.join(filesPath, 'TTS'))
+makeFolder(path.join(filesPath, 'Schedules'))
+
 app.use(express.static(path.join(__dirname, 'public')))
+app.use('/files', express.static(filesPath))
+app.use('/media', express.static(path.join(__dirname, 'Media')))
 
 app.use('/api', routes)
 
