@@ -21,6 +21,7 @@ function runQsysWorker(args) {
             'Server',
             `Q-Sys connected index: ${args.index} ipaddress: ${args.ipaddress}`
           )
+          resolve()
           break
         case 'close':
           workerPool[args.index] = null
