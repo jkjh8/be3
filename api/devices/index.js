@@ -169,7 +169,8 @@ export async function deviceRefresh(req, res) {
       if (workerPool[index] !== null) {
         workerPool[index].postMessage({ type: 'status' })
       } else {
-        runQsysWorker(args)
+        await runQsysWorker(args)
+        workerPool[index].postMessage({ type: 'status' })
       }
     }
   } catch (err) {
