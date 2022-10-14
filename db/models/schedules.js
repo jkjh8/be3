@@ -9,6 +9,7 @@ export default mongoose.model(
       repeat: String,
       dateTime: String,
       date: String,
+      timestamp: Object,
       time: String,
       zones: Array,
       message: String,
